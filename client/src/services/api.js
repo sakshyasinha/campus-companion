@@ -1,13 +1,14 @@
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
-// Create axios instance with base configuration
+// Create axios instance with production-ready configuration
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
-  timeout: 10000,
+  timeout: 15000, // Increased timeout for production
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  withCredentials: true // Enable cookies for session management
 })
 
 // Request interceptor to add auth token
@@ -24,24 +25,47 @@ api.interceptors.request.use(
   }
 )
 
-// Response interceptor for error handling
+// Enhanced response interceptor with retry logic
 api.interceptors.response.use(
   (response) => {
     return response
   },
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config
     const message = error.response?.data?.message || error.message || 'An error occurred'
     
+    // Handle network errors with retry
+    if (!error.response && !originalRequest._retry) {
+      originalRequest._retry = true
+      try {
+        return await api.request(originalRequest)
+      } catch (retryError) {
+        toast.error('Network error. Please check your connection.')
+        return Promise.reject(retryError)
+      }
+    }
+    
+    // Handle different status codes
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
+      localStorage.removeItem('user')
       window.location.href = '/'
       toast.error('Session expired. Please log in again.')
     } else if (error.response?.status === 403) {
       toast.error('Access denied.')
+    } else if (error.response?.status === 404) {
+      toast.error('Resource not found.')
+    } else if (error.response?.status === 429) {
+      toast.error('Too many requests. Please wait a moment.')
     } else if (error.response?.status >= 500) {
       toast.error('Server error. Please try again later.')
+    } else if (error.code === 'ECONNABORTED') {
+      toast.error('Request timeout. Please try again.')
     } else {
-      toast.error(message)
+      // Only show toast for non-silent errors
+      if (!originalRequest.silent) {
+        toast.error(message)
+      }
     }
     
     return Promise.reject(error)

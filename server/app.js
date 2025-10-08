@@ -33,13 +33,30 @@ app.use(helmet({
   contentSecurityPolicy: false // Disable CSP for development
 }))
 
-// CORS configuration
+// CORS configuration - production ready
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3002',
+      'http://localhost:5173',
+      process.env.FRONTEND_URL,
+      process.env.CORS_ORIGIN
+    ].filter(Boolean)
+    
+    // Allow requests with no origin (mobile apps, etc.)
+    if (!origin) return callback(null, true)
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token']
 }
 app.use(cors(corsOptions))
 
@@ -121,12 +138,30 @@ if (process.env.NODE_ENV === 'production') {
 app.use(notFound)
 app.use(errorHandler)
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/campus_companion', {
-  maxPoolSize: parseInt(process.env.DB_POOL_SIZE) || 10,
-  serverSelectionTimeoutMS: parseInt(process.env.DB_TIMEOUT) || 30000,
-  socketTimeoutMS: 45000
-})
+// Database connection with retry logic
+const connectDB = async (retries = 5) => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/campus_companion', {
+      maxPoolSize: parseInt(process.env.DB_POOL_SIZE) || 10,
+      serverSelectionTimeoutMS: parseInt(process.env.DB_TIMEOUT) || 30000,
+      socketTimeoutMS: 45000,
+      bufferCommands: false,
+      bufferMaxEntries: 0
+    })
+    console.log('✅ Connected to MongoDB')
+  } catch (error) {
+    console.error('❌ MongoDB connection error:', error.message)
+    if (retries > 0) {
+      console.log(`🔄 Retrying connection... (${retries} attempts left)`)
+      setTimeout(() => connectDB(retries - 1), 5000)
+    } else {
+      console.error('💥 Failed to connect to MongoDB after multiple attempts')
+      process.exit(1)
+    }
+  }
+}
+
+connectDB()
 
 mongoose.connection.on('connected', () => {
   console.log('✅ Connected to MongoDB')

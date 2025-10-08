@@ -1,22 +1,14 @@
-import React from 'react'
+import React, { useState, memo } from 'react'
 import { Calendar, MapPin, Users, Clock, ExternalLink } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { eventService } from '../services/eventService'
+import { formatDate, formatTime, isToday, getDaysUntil } from '../utils/dateUtils'
+import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 
-const EventCard = ({ event, user, onUpdate }) => {
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
-  }
-
-  const formatTime = (time) => {
-    return time
-  }
+const EventCard = memo(({ event, onUpdate }) => {
+  const { user } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
 
   const isRegistered = user && event.registrations?.some(
     reg => reg.user === user.id && reg.status === 'registered'
@@ -24,6 +16,8 @@ const EventCard = ({ event, user, onUpdate }) => {
 
   const isPastEvent = new Date(event.date) < new Date()
   const isFull = event.maxAttendees && event.currentAttendees >= event.maxAttendees
+  const isEventToday = isToday(event.date)
+  const daysUntil = getDaysUntil(event.date)
 
   const getCategoryColor = (category) => {
     const colors = {
@@ -197,6 +191,8 @@ const EventCard = ({ event, user, onUpdate }) => {
       </div>
     </motion.div>
   )
-}
+})
+
+EventCard.displayName = 'EventCard'
 
 export default EventCard
