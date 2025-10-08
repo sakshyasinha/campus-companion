@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🏫 Campus Companion
 
 A comprehensive campus management platform that brings students, faculty, and campus life together in one seamless application.
@@ -288,3 +289,6 @@ MIT License - see LICENSE file for details
 
 ## Support
 For support, please contact: support@campuscompanion.com
+=======
+# campus-companion
+>>>>>>> 9b1bfeb7f2b842a34c8aaa6507f210fe078baca6
