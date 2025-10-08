@@ -1,8 +1,50 @@
-# Campus Companion - Complete Setup Guide
+# 🏫 Campus Companion
 
-## Project Overview
-Campus Companion is a comprehensive AI-powered platform for campus management with features including:
-- Event management and registration
+A comprehensive campus management platform that brings students, faculty, and campus life together in one seamless application.
+
+![Campus Companion](https://img.shields.io/badge/React-18.2.0-blue)
+![Node.js](https://img.shields.io/badge/Node.js-18+-green)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-green)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
+## ✨ Features
+
+### 🎉 **Event Management**
+- Browse and discover campus events
+- Real-time event registration and capacity tracking
+- Smart filtering by category, date, and search
+- Event creation and management for organizers
+- Interactive event cards with detailed information
+
+### 🔍 **Lost & Found System**
+- Report lost items with descriptions and photos
+- Search and browse found items
+- Category-based organization
+- Location tracking and contact information
+
+### 👥 **Community Hub**
+- Campus-wide discussion forums
+- Share updates and announcements
+- Real-time engagement and comments
+- User-generated content moderation
+
+### 💼 **Placement & Career News**
+- Latest job opportunities and internships
+- Company visit announcements
+- Career guidance and resources
+- Placement statistics and success stories
+
+### 📄 **Resume Analyzer**
+- AI-powered resume analysis and feedback
+- Skill gap identification
+- Improvement suggestions
+- Industry-specific recommendations
+
+### 🔐 **User Management**
+- Secure authentication system
+- Role-based access control
+- User profiles and preferences
+- Department and year-wise organization
 - Lost & Found system with AI matching
 - Community posts and interactions
 - Placement news and updates
