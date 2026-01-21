@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // Use root path for Vercel, /campus-companion/ for GitHub Pages
+  base: process.env.VERCEL ? '/' : '/campus-companion/',
   plugins: [react()],
   server: {
     port: 3000,

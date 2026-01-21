@@ -3,6 +3,7 @@ const { protect } = require('../middleware/auth')
 
 const router = express.Router()
 
+
 // @desc    Analyze resume
 // @route   POST /api/resume/analyze
 // @access  Private

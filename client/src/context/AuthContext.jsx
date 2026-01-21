@@ -27,8 +27,8 @@ export const AuthProvider = ({ children }) => {
         // For now, create a mock user since we don't have a working auth system
         const mockUser = {
           id: '1',
-          name: 'John Doe',
-          email: 'john.doe@campus.edu',
+          name: 'Sakshya Sinha',
+          email: 'sakshya.sinha@campus.edu',
           department: 'Computer Science',
           year: '3rd Year',
           avatar: null

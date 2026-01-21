@@ -34,12 +34,14 @@ fi
 
 echo "✅ Backend dependencies installed!"
 
+
 echo ""
-echo "🎉 Project is ready for deployment!"
-echo ""
-echo "Next steps:"
-echo "1. Push your code to GitHub"
-echo "2. Deploy backend to Railway: https://railway.app/"
-echo "3. Deploy frontend to Vercel: https://vercel.com/"
-echo ""
-echo "📖 See DEPLOYMENT.md for detailed instructions"
+echo "🚀 Deploying frontend to GitHub Pages (gh-pages branch)..."
+cd ../client
+git show-ref --verify --quiet refs/heads/gh-pages || git checkout --orphan gh-pages
+git --work-tree dist add --all
+git --work-tree dist commit -m 'Deploy to GitHub Pages'
+git push origin gh-pages --force
+git checkout main
+echo "✅ Deployment complete!"
+echo "Go to your repo settings and set GitHub Pages source to the gh-pages branch."

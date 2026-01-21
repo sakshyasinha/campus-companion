@@ -50,6 +50,7 @@ const corsOptions = {
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true)
     } else {
+      console.log('CORS blocked origin:', origin)
       callback(new Error('Not allowed by CORS'))
     }
   },
@@ -140,13 +141,14 @@ app.use(errorHandler)
 
 // Database connection with retry logic
 const connectDB = async (retries = 5) => {
+  console.log('🔍 Attempting MongoDB connection...')
+  console.log('🔍 URI:', process.env.MONGODB_URI ? 'Set ✓' : 'Missing ✗')
   try {
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/campus_companion', {
       maxPoolSize: parseInt(process.env.DB_POOL_SIZE) || 10,
       serverSelectionTimeoutMS: parseInt(process.env.DB_TIMEOUT) || 30000,
       socketTimeoutMS: 45000,
-      bufferCommands: false,
-      bufferMaxEntries: 0
+      bufferCommands: false
     })
     console.log('✅ Connected to MongoDB')
   } catch (error) {
@@ -204,14 +206,15 @@ process.on('uncaughtException', (err) => {
   process.exit(1)
 })
 
-const PORT = process.env.PORT || 5001
-const HOST = process.env.HOST || 'localhost'
+
+const PORT = 3001;
+const HOST = process.env.HOST || 'localhost';
 
 app.listen(PORT, HOST, () => {
-  console.log(`🚀 Server running on http://${HOST}:${PORT}`)
-  console.log(`📄 Environment: ${process.env.NODE_ENV}`)
-  console.log(`📊 Health check: http://${HOST}:${PORT}/health`)
-})
+  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+  console.log(`📄 Environment: ${process.env.NODE_ENV}`);
+  console.log(`📊 Health check: http://${HOST}:${PORT}/health`);
+});
 
 module.exports = app
 // restart
