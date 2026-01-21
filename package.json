@@ -12,7 +12,19 @@
   "devDependencies": {
     "concurrently": "^8.2.0"
   },
-  "keywords": ["campus", "ai", "student", "management"],
+  "keywords": [
+    "campus",
+    "ai",
+    "student",
+    "management"
+  ],
   "author": "Sakshya Sinha",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "openai": "^6.8.1"
+  }
 }

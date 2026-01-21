@@ -3,6 +3,7 @@ import { Calendar, MapPin, Users, Clock, Filter, Plus, Search } from 'lucide-rea
 import { eventService } from '../services/eventService'
 import { useAuth } from '../context/AuthContext'
 import EventCard from '../components/EventCard'
+import CreateEventModal from '../components/CreateEventModal'
 import { motion } from 'framer-motion'
 
 const Events = () => {
@@ -90,15 +91,13 @@ const Events = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Campus Events</h1>
               <p className="text-gray-600">Discover and join exciting events happening on campus</p>
             </div>
-            {user && (
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="mt-4 md:mt-0 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 flex items-center"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Create Event
-              </button>
-            )}
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="mt-4 md:mt-0 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 flex items-center"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Create Event
+            </button>
           </div>
 
           {/* Filters */}
@@ -149,7 +148,7 @@ const Events = () => {
           </div>
         </motion.div>
 
-        {/* Events Grid */}
+  {/* Events Grid */}
         {events.length === 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
@@ -190,6 +189,28 @@ const Events = () => {
               </motion.div>
             ))}
           </motion.div>
+        )}
+
+        {showCreateModal && (
+          <CreateEventModal
+            onClose={() => setShowCreateModal(false)}
+            onCreate={async (payload) => {
+              try {
+                await eventService.createEvent(payload)
+                await fetchEvents()
+              } catch (err) {
+                // Fallback: append locally when API is protected/unavailable
+                const tempEvent = {
+                  _id: Date.now().toString(),
+                  ...payload,
+                  currentAttendees: 0,
+                  registrations: [],
+                  createdAt: new Date().toISOString()
+                }
+                setEvents((prev) => [tempEvent, ...prev])
+              }
+            }}
+          />
         )}
       </div>
     </div>

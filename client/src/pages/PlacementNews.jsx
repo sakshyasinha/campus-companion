@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Building, MapPin, ExternalLink, Filter, Search, Bookmark } from 'lucide-react';
+import { Calendar, Building, MapPin, ExternalLink, Filter, Search, Bookmark, Plus } from 'lucide-react';
+import CreatePlacementModal from '../components/CreatePlacementModal';
 
 const PlacementNews = () => {
   const [placements, setPlacements] = useState([]);
@@ -8,6 +9,7 @@ const PlacementNews = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCompany, setFilterCompany] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     fetchPlacements();
@@ -122,11 +124,20 @@ const PlacementNews = () => {
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Placement Opportunities</h1>
-          <p className="text-lg text-gray-600">
-            Stay updated with the latest job opportunities and placement news
-          </p>
+        <div className="mb-8 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+          <div className="text-left">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Placement Opportunities</h1>
+            <p className="text-lg text-gray-600">
+              Stay updated with the latest job opportunities and placement news
+            </p>
+          </div>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="inline-flex items-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="mr-2 h-5 w-5" />
+            Post Opportunity
+          </button>
         </div>
 
         {/* Search and Filters */}
@@ -266,10 +277,16 @@ const PlacementNews = () => {
         {filteredPlacements.length === 0 && !loading && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">No placement opportunities found matching your criteria.</p>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="mt-6 rounded-lg bg-blue-600 px-6 py-3 text-white font-medium hover:bg-blue-700 transition-colors"
+            >
+              Post First Opportunity
+            </button>
           </div>
         )}
 
-        {/* Statistics Section */}
+  {/* Statistics Section */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white rounded-lg shadow-sm p-6 text-center">
             <div className="text-2xl font-bold text-blue-600 mb-2">
@@ -297,6 +314,22 @@ const PlacementNews = () => {
             <div className="text-gray-600">Avg. Package</div>
           </div>
         </div>
+        {showCreateModal && (
+          <CreatePlacementModal
+            onClose={() => setShowCreateModal(false)}
+            onCreate={async (payload) => {
+              // Append locally (mock environment). In real app call placement.createNews
+              const newPlacement = {
+                _id: Date.now().toString(),
+                status: 'open',
+                postedDate: new Date().toISOString(),
+                category: 'software',
+                ...payload
+              }
+              setPlacements((prev) => [newPlacement, ...prev])
+            }}
+          />
+        )}
       </div>
     </div>
   );

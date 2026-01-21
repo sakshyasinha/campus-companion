@@ -47,10 +47,16 @@ api.interceptors.response.use(
     
     // Handle different status codes
     if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      window.location.href = '/'
-      toast.error('Session expired. Please log in again.')
+      // Only force logout if not an event creation (or other allowed fallback)
+      const isEventCreate = originalRequest?.url?.includes('/events') && originalRequest?.method === 'post';
+      if (!isEventCreate) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        window.location.href = '/'
+        toast.error('Session expired. Please log in again.')
+      } else {
+        toast.error('Not authorized to create event. Using local fallback.')
+      }
     } else if (error.response?.status === 403) {
       toast.error('Access denied.')
     } else if (error.response?.status === 404) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Heart, MessageCircle, Share2, User, Calendar, Tag } from 'lucide-react';
+import { communityService } from '../services/communityService';
 
 const Community = () => {
   const [posts, setPosts] = useState([]);
