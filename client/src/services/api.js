@@ -1,9 +1,13 @@
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
+// Determine API URL - handle GitHub Pages demo mode (no backend)
+const apiURL = import.meta.env.VITE_API_URL
+const hasBackend = apiURL && apiURL.trim().length > 0
+
 // Create axios instance with production-ready configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
+  baseURL: apiURL || 'http://localhost:3001/api',
   timeout: 15000, // Increased timeout for production
   headers: {
     'Content-Type': 'application/json'
@@ -54,11 +58,21 @@ api.interceptors.response.use(
     } else if (error.response?.status === 403) {
       toast.error('Access denied.')
     } else if (error.response?.status === 404) {
-      toast.error('Resource not found.')
+      // Suppress 404 errors in demo mode (no backend)
+      if (!hasBackend && !originalRequest.silent) {
+        console.info('Demo mode: Backend API not available')
+      } else {
+        toast.error('Resource not found.')
+      }
     } else if (error.response?.status === 429) {
       toast.error('Too many requests. Please wait a moment.')
     } else if (error.response?.status >= 500) {
       toast.error('Server error. Please try again later.')
+    } else if (!hasBackend && error.code === 'ERR_NETWORK') {
+      // Demo mode - show helpful message
+      if (!originalRequest.silent) {
+        toast.error('Backend API not available. This is a frontend-only demo.')
+      }
     } else if (error.code === 'ECONNABORTED') {
       toast.error('Request timeout. Please try again.')
     } else {
